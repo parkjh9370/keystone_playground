@@ -16,12 +16,20 @@ import { withAuth, session } from './auth';
 
 export default withAuth(
   config({
+    // db: {
+    //   // we're using sqlite for the fastest startup experience
+    //   //   for more information on what database might be appropriate for you
+    //   //   see https://keystonejs.com/docs/guides/choosing-a-database#title
+    //   provider: 'sqlite',
+    //   url: 'file:./keystone.db',
+    // },
     db: {
-      // we're using sqlite for the fastest startup experience
-      //   for more information on what database might be appropriate for you
-      //   see https://keystonejs.com/docs/guides/choosing-a-database#title
-      provider: 'sqlite',
-      url: 'file:./keystone.db',
+      provider: 'mysql',
+      url: 'mysql://keystone:keystone@localhost:3306/keystone',
+      onConnect: async context => { /* ... */ },
+      // Optional advanced configuration
+      enableLogging: true,
+      idField: { kind: 'uuid' },
     },
     lists,
     session,

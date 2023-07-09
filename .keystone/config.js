@@ -132,6 +132,30 @@ var lists = {
       // this can be helpful to find out all the Posts associated with a Tag
       posts: (0, import_fields.relationship)({ ref: "Post.tags", many: true })
     }
+  }),
+  Person: (0, import_core.list)({
+    access: import_access.allowAll,
+    fields: {
+      name: (0, import_fields.text)({ validation: { isRequired: true } }),
+      tasks: (0, import_fields.relationship)({ ref: "Task.assignedTo", many: true })
+    }
+  }),
+  Task: (0, import_core.list)({
+    access: import_access.allowAll,
+    fields: {
+      label: (0, import_fields.text)({ validation: { isRequired: true } }),
+      priority: (0, import_fields.select)({
+        type: "enum",
+        options: [
+          { label: "Low", value: "low" },
+          { label: "Medium", value: "medium" },
+          { label: "High", value: "high" }
+        ]
+      }),
+      isComplete: (0, import_fields.checkbox)(),
+      assignedTo: (0, import_fields.relationship)({ ref: "Person.tasks", many: false }),
+      finishBy: (0, import_fields.timestamp)()
+    }
   })
 };
 
@@ -171,12 +195,21 @@ var session = (0, import_session.statelessSessions)({
 // keystone.ts
 var keystone_default = withAuth(
   (0, import_core2.config)({
+    // db: {
+    //   // we're using sqlite for the fastest startup experience
+    //   //   for more information on what database might be appropriate for you
+    //   //   see https://keystonejs.com/docs/guides/choosing-a-database#title
+    //   provider: 'sqlite',
+    //   url: 'file:./keystone.db',
+    // },
     db: {
-      // we're using sqlite for the fastest startup experience
-      //   for more information on what database might be appropriate for you
-      //   see https://keystonejs.com/docs/guides/choosing-a-database#title
-      provider: "sqlite",
-      url: "file:./keystone.db"
+      provider: "mysql",
+      url: "mysql://keystone:keystone@localhost:3306/keystone",
+      onConnect: async (context) => {
+      },
+      // Optional advanced configuration
+      enableLogging: true,
+      idField: { kind: "uuid" }
     },
     lists,
     session

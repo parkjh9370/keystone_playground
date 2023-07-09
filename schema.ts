@@ -16,6 +16,7 @@ import {
   password,
   timestamp,
   select,
+  checkbox,
 } from '@keystone-6/core/fields';
 
 // the document field is a more complicated field, so it has it's own package
@@ -144,6 +145,30 @@ export const lists: Lists = {
       name: text(),
       // this can be helpful to find out all the Posts associated with a Tag
       posts: relationship({ ref: 'Post.tags', many: true }),
+    },
+  }),
+  Person: list({
+    access: allowAll,
+    fields: {
+      name: text({ validation: { isRequired: true } }),
+      tasks: relationship({ ref: 'Task.assignedTo', many: true }),
+    },
+  }),
+  Task: list({
+    access: allowAll,
+    fields: {
+      label: text({ validation: { isRequired: true } }),
+      priority: select({
+        type: 'enum',
+        options: [
+          { label: 'Low', value: 'low' },
+          { label: 'Medium', value: 'medium' },
+          { label: 'High', value: 'high' },
+        ],
+      }),
+      isComplete: checkbox(),
+      assignedTo: relationship({ ref: 'Person.tasks', many: false }),
+      finishBy: timestamp(),
     },
   }),
 };
